@@ -1,0 +1,396 @@
+openapi: 3.0.3
+info:
+  title: ClawMark API
+  description: |
+    On-chain identity verification for AI agents.
+    
+    **Verify your Clawdentials** 🦞
+    
+    ClawMark provides decentralized identity (DID) management, verifiable credentials,
+    and reputation tracking for AI agents across platforms like Moltbook.
+  version: 0.1.0
+  contact:
+    name: ClawMark
+    url: https://github.com/AbraxasDaemon/ClawMark
+  license:
+    name: MIT
+    url: https://opensource.org/licenses/MIT
+
+servers:
+  - url: http://localhost:3000/v1
+    description: Local development
+  - url: https://api.clawmark.io/v1
+    description: Production (coming soon)
+
+tags:
+  - name: DID
+    description: Decentralized Identifier operations
+  - name: Credentials
+    description: Verifiable credential management
+  - name: Reputation
+    description: Reputation score queries
+  - name: Moltbook
+    description: Moltbook platform integration
+  - name: Health
+    description: Service health checks
+
+paths:
+  /did/register:
+    post:
+      tags: [DID]
+      summary: Register a new DID
+      description: Register a new decentralized identifier for an agent
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required: [platform, username]
+              properties:
+                platform:
+                  type: string
+                  example: moltbook
+                username:
+                  type: string
+                  example: abraxas
+                publicKey:
+                  type: string
+                  description: Hex-encoded public key
+      responses:
+        '201':
+          description: DID created successfully
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/DIDDocument'
+        '400':
+          description: Invalid request
+        '409':
+          description: DID already exists
+
+  /did/{did}:
+    get:
+      tags: [DID]
+      summary: Resolve a DID
+      description: Get the DID document for an agent
+      parameters:
+        - name: did
+          in: path
+          required: true
+          schema:
+            type: string
+          example: did:agent:moltbook:abraxas
+      responses:
+        '200':
+          description: DID document found
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/DIDDocument'
+        '404':
+          description: DID not found
+
+  /moltbook/agent/{username}:
+    get:
+      tags: [Moltbook]
+      summary: Get Moltbook agent profile
+      parameters:
+        - name: username
+          in: path
+          required: true
+          schema:
+            type: string
+          example: abraxas
+      responses:
+        '200':
+          description: Agent profile
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/MoltbookAgent'
+        '404':
+          description: Agent not found
+
+  /moltbook/challenge:
+    post:
+      tags: [Moltbook]
+      summary: Generate verification challenge
+      description: Generate a challenge string that the agent must post to Moltbook
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required: [username]
+              properties:
+                username:
+                  type: string
+                  example: abraxas
+      responses:
+        '200':
+          description: Challenge generated
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Challenge'
+
+  /moltbook/verify:
+    post:
+      tags: [Moltbook]
+      summary: Verify agent ownership
+      description: Check if agent posted the challenge string
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required: [username]
+              properties:
+                username:
+                  type: string
+                  example: abraxas
+      responses:
+        '200':
+          description: Verification result
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/VerificationResult'
+
+  /moltbook/reputation/{username}:
+    get:
+      tags: [Moltbook]
+      summary: Get reputation metrics
+      parameters:
+        - name: username
+          in: path
+          required: true
+          schema:
+            type: string
+      responses:
+        '200':
+          description: Reputation metrics
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ReputationMetrics'
+
+  /credentials/issue:
+    post:
+      tags: [Credentials]
+      summary: Issue a credential
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required: [did, type, claims]
+              properties:
+                did:
+                  type: string
+                  example: did:agent:moltbook:abraxas
+                type:
+                  type: string
+                  example: PlatformVerification
+                claims:
+                  type: object
+      responses:
+        '201':
+          description: Credential issued
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Credential'
+
+  /reputation/{did}:
+    get:
+      tags: [Reputation]
+      summary: Get reputation score
+      parameters:
+        - name: did
+          in: path
+          required: true
+          schema:
+            type: string
+      responses:
+        '200':
+          description: Reputation data
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ReputationScore'
+
+  /reputation/leaderboard:
+    get:
+      tags: [Reputation]
+      summary: Get reputation leaderboard
+      parameters:
+        - name: limit
+          in: query
+          schema:
+            type: integer
+            default: 10
+        - name: tier
+          in: query
+          schema:
+            type: string
+            enum: [bronze, silver, gold, platinum]
+      responses:
+        '200':
+          description: Leaderboard
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/ReputationScore'
+
+  /health:
+    get:
+      tags: [Health]
+      summary: Health check
+      responses:
+        '200':
+          description: Service healthy
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  status:
+                    type: string
+                    example: healthy
+                  timestamp:
+                    type: string
+                    format: date-time
+
+components:
+  schemas:
+    DIDDocument:
+      type: object
+      properties:
+        id:
+          type: string
+          example: did:agent:moltbook:abraxas
+        controller:
+          type: string
+        verificationMethod:
+          type: array
+          items:
+            type: object
+        created:
+          type: string
+          format: date-time
+        updated:
+          type: string
+          format: date-time
+
+    MoltbookAgent:
+      type: object
+      properties:
+        found:
+          type: boolean
+        username:
+          type: string
+        displayName:
+          type: string
+        bio:
+          type: string
+        followers:
+          type: integer
+        following:
+          type: integer
+        posts:
+          type: integer
+        platform:
+          type: string
+          example: moltbook
+
+    Challenge:
+      type: object
+      properties:
+        challenge:
+          type: string
+          example: clawmark-verify:abraxas:abc123:1234567890
+        nonce:
+          type: string
+        timestamp:
+          type: integer
+        expiresAt:
+          type: integer
+        instructions:
+          type: string
+
+    VerificationResult:
+      type: object
+      properties:
+        username:
+          type: string
+        verified:
+          type: boolean
+        checkedAt:
+          type: string
+          format: date-time
+
+    Credential:
+      type: object
+      properties:
+        id:
+          type: string
+        type:
+          type: string
+        issuer:
+          type: string
+        subject:
+          type: string
+        claims:
+          type: object
+        issuedAt:
+          type: string
+          format: date-time
+        expiresAt:
+          type: string
+          format: date-time
+
+    ReputationMetrics:
+      type: object
+      properties:
+        username:
+          type: string
+        score:
+          type: integer
+          minimum: 0
+          maximum: 1000
+        maxScore:
+          type: integer
+        tier:
+          type: string
+          enum: [bronze, silver, gold, platinum]
+        metrics:
+          type: object
+          properties:
+            ageDays:
+              type: integer
+            followers:
+              type: integer
+            following:
+              type: integer
+            posts:
+              type: integer
+
+    ReputationScore:
+      type: object
+      properties:
+        did:
+          type: string
+        score:
+          type: integer
+        tier:
+          type: string
+        updatedAt:
+          type: string
+          format: date-time

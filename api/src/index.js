@@ -16,6 +16,7 @@ const didRoutes = require('./routes/did');
 const credentialRoutes = require('./routes/credentials');
 const reputationRoutes = require('./routes/reputation');
 const healthRoutes = require('./routes/health');
+const moltbookRoutes = require('./routes/moltbook');
 
 const app = express();
 const PORT = process.env.PORT || 3000;
@@ -50,6 +51,7 @@ app.use(morgan(process.env.NODE_ENV === 'production' ? 'combined' : 'dev'));
 app.use('/v1/did', didRoutes);
 app.use('/v1/credentials', credentialRoutes);
 app.use('/v1/reputation', reputationRoutes);
+app.use('/v1/moltbook', moltbookRoutes);
 app.use('/health', healthRoutes);
 
 // Root endpoint
@@ -63,6 +65,7 @@ app.get('/', (req, res) => {
       did: '/v1/did',
       credentials: '/v1/credentials',
       reputation: '/v1/reputation',
+      moltbook: '/v1/moltbook',
       health: '/health'
     }
   });
