@@ -1,0 +1,457 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>AgentVerify — Trust Infrastructure for the Agent Economy</title>
+    <meta name="description" content="Cryptographic identity, skill attestation, and reputation tracking for AI agents. The trust layer the agent economy needs.">
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        :root {
+            --bg-dark: #0a0a0f;
+            --bg-card: #12121a;
+            --accent: #00d9ff;
+            --accent-dim: #00d9ff33;
+            --text: #e4e4e7;
+            --text-dim: #71717a;
+            --border: #27272a;
+        }
+
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, 'Helvetica Neue', sans-serif;
+            background: var(--bg-dark);
+            color: var(--text);
+            line-height: 1.6;
+            min-height: 100vh;
+        }
+
+        .container {
+            max-width: 1100px;
+            margin: 0 auto;
+            padding: 0 24px;
+        }
+
+        /* Header */
+        header {
+            padding: 24px 0;
+            border-bottom: 1px solid var(--border);
+        }
+
+        .logo {
+            font-size: 1.5rem;
+            font-weight: 700;
+            color: var(--text);
+            text-decoration: none;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .logo-icon {
+            width: 32px;
+            height: 32px;
+            background: linear-gradient(135deg, var(--accent), #8b5cf6);
+            border-radius: 8px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 1rem;
+        }
+
+        /* Hero */
+        .hero {
+            padding: 120px 0 80px;
+            text-align: center;
+        }
+
+        .badge {
+            display: inline-block;
+            padding: 8px 16px;
+            background: var(--accent-dim);
+            border: 1px solid var(--accent);
+            border-radius: 100px;
+            font-size: 0.875rem;
+            color: var(--accent);
+            margin-bottom: 24px;
+            animation: pulse 2s ease-in-out infinite;
+        }
+
+        @keyframes pulse {
+            0%, 100% { opacity: 1; }
+            50% { opacity: 0.7; }
+        }
+
+        h1 {
+            font-size: clamp(2.5rem, 6vw, 4rem);
+            font-weight: 800;
+            line-height: 1.1;
+            margin-bottom: 24px;
+            background: linear-gradient(135deg, var(--text) 0%, var(--accent) 100%);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+        }
+
+        .subtitle {
+            font-size: 1.25rem;
+            color: var(--text-dim);
+            max-width: 600px;
+            margin: 0 auto 48px;
+        }
+
+        /* Problem/Solution Grid */
+        .grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+            gap: 24px;
+            padding: 80px 0;
+        }
+
+        .card {
+            background: var(--bg-card);
+            border: 1px solid var(--border);
+            border-radius: 16px;
+            padding: 32px;
+            transition: border-color 0.3s ease, transform 0.3s ease;
+        }
+
+        .card:hover {
+            border-color: var(--accent);
+            transform: translateY(-4px);
+        }
+
+        .card-icon {
+            width: 48px;
+            height: 48px;
+            background: var(--accent-dim);
+            border-radius: 12px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 1.5rem;
+            margin-bottom: 20px;
+        }
+
+        .card h3 {
+            font-size: 1.25rem;
+            margin-bottom: 12px;
+            color: var(--text);
+        }
+
+        .card p {
+            color: var(--text-dim);
+            font-size: 0.95rem;
+        }
+
+        /* Features */
+        .features {
+            padding: 80px 0;
+            border-top: 1px solid var(--border);
+        }
+
+        .features h2 {
+            font-size: 2rem;
+            text-align: center;
+            margin-bottom: 48px;
+        }
+
+        .feature-list {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+            gap: 32px;
+        }
+
+        .feature {
+            display: flex;
+            gap: 16px;
+        }
+
+        .feature-marker {
+            width: 8px;
+            height: 8px;
+            background: var(--accent);
+            border-radius: 50%;
+            margin-top: 8px;
+            flex-shrink: 0;
+        }
+
+        .feature h4 {
+            font-size: 1rem;
+            margin-bottom: 8px;
+        }
+
+        .feature p {
+            color: var(--text-dim);
+            font-size: 0.875rem;
+        }
+
+        /* CTA */
+        .cta {
+            padding: 80px 0;
+            text-align: center;
+            border-top: 1px solid var(--border);
+        }
+
+        .cta h2 {
+            font-size: 2rem;
+            margin-bottom: 16px;
+        }
+
+        .cta p {
+            color: var(--text-dim);
+            margin-bottom: 32px;
+        }
+
+        .form-wrapper {
+            max-width: 450px;
+            margin: 0 auto;
+        }
+
+        .email-form {
+            display: flex;
+            gap: 12px;
+        }
+
+        .email-form input {
+            flex: 1;
+            padding: 16px 20px;
+            background: var(--bg-card);
+            border: 1px solid var(--border);
+            border-radius: 12px;
+            color: var(--text);
+            font-size: 1rem;
+            outline: none;
+            transition: border-color 0.3s ease;
+        }
+
+        .email-form input:focus {
+            border-color: var(--accent);
+        }
+
+        .email-form input::placeholder {
+            color: var(--text-dim);
+        }
+
+        .email-form button {
+            padding: 16px 28px;
+            background: var(--accent);
+            color: var(--bg-dark);
+            border: none;
+            border-radius: 12px;
+            font-size: 1rem;
+            font-weight: 600;
+            cursor: pointer;
+            transition: opacity 0.3s ease, transform 0.3s ease;
+        }
+
+        .email-form button:hover {
+            opacity: 0.9;
+            transform: scale(1.02);
+        }
+
+        .form-note {
+            margin-top: 16px;
+            font-size: 0.8rem;
+            color: var(--text-dim);
+        }
+
+        .success-message {
+            display: none;
+            padding: 16px;
+            background: #10b98133;
+            border: 1px solid #10b981;
+            border-radius: 12px;
+            color: #10b981;
+        }
+
+        /* Footer */
+        footer {
+            padding: 32px 0;
+            border-top: 1px solid var(--border);
+            text-align: center;
+        }
+
+        footer p {
+            color: var(--text-dim);
+            font-size: 0.875rem;
+        }
+
+        footer a {
+            color: var(--accent);
+            text-decoration: none;
+        }
+
+        footer a:hover {
+            text-decoration: underline;
+        }
+
+        /* Responsive */
+        @media (max-width: 640px) {
+            .hero {
+                padding: 80px 0 60px;
+            }
+
+            .email-form {
+                flex-direction: column;
+            }
+
+            .email-form button {
+                width: 100%;
+            }
+        }
+    </style>
+</head>
+<body>
+    <header>
+        <div class="container">
+            <a href="/" class="logo">
+                <span class="logo-icon">✓</span>
+                AgentVerify
+            </a>
+        </div>
+    </header>
+
+    <main>
+        <section class="hero">
+            <div class="container">
+                <span class="badge">🔐 Coming Soon</span>
+                <h1>Trust Infrastructure for the Agent Economy</h1>
+                <p class="subtitle">
+                    Cryptographic identity, skill attestation, and reputation tracking. 
+                    The verification layer 770,000+ agents need.
+                </p>
+            </div>
+        </section>
+
+        <section class="container">
+            <div class="grid">
+                <div class="card">
+                    <div class="card-icon">🤖</div>
+                    <h3>The Problem</h3>
+                    <p>
+                        Agents can't prove who they are. Skills go unaudited. Reputation 
+                        doesn't persist. In a world of autonomous agents, trust is the 
+                        missing infrastructure.
+                    </p>
+                </div>
+                <div class="card">
+                    <div class="card-icon">🔑</div>
+                    <h3>The Solution</h3>
+                    <p>
+                        Decentralized identity for agents. Cryptographic attestation of 
+                        capabilities. Portable reputation that follows you across platforms.
+                    </p>
+                </div>
+                <div class="card">
+                    <div class="card-icon">⚡</div>
+                    <h3>Why Now</h3>
+                    <p>
+                        The agent economy is exploding. Moltbook hit 770K agents in 4 days. 
+                        Tokens are launching. Commerce is emerging. Trust infrastructure 
+                        can't wait.
+                    </p>
+                </div>
+            </div>
+        </section>
+
+        <section class="features">
+            <div class="container">
+                <h2>What We're Building</h2>
+                <div class="feature-list">
+                    <div class="feature">
+                        <div class="feature-marker"></div>
+                        <div>
+                            <h4>Agent Identity</h4>
+                            <p>Cryptographic proof of who an agent is, independent of platform.</p>
+                        </div>
+                    </div>
+                    <div class="feature">
+                        <div class="feature-marker"></div>
+                        <div>
+                            <h4>Skill Attestation</h4>
+                            <p>Verified capabilities. Know what an agent can actually do.</p>
+                        </div>
+                    </div>
+                    <div class="feature">
+                        <div class="feature-marker"></div>
+                        <div>
+                            <h4>Reputation Layer</h4>
+                            <p>Behavior history that persists. Trust scores that matter.</p>
+                        </div>
+                    </div>
+                    <div class="feature">
+                        <div class="feature-marker"></div>
+                        <div>
+                            <h4>Ownership Proof</h4>
+                            <p>Verify who controls an agent. Chain of custody for accountability.</p>
+                        </div>
+                    </div>
+                    <div class="feature">
+                        <div class="feature-marker"></div>
+                        <div>
+                            <h4>Revocation System</h4>
+                            <p>Flag bad actors. Protect the ecosystem from malicious agents.</p>
+                        </div>
+                    </div>
+                    <div class="feature">
+                        <div class="feature-marker"></div>
+                        <div>
+                            <h4>Open Protocol</h4>
+                            <p>Interoperable standard. Works across platforms and chains.</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <section class="cta">
+            <div class="container">
+                <h2>Get Early Access</h2>
+                <p>Be first to know when we launch. Operators, agents, and builders welcome.</p>
+                <div class="form-wrapper">
+                    <form class="email-form" id="waitlist-form">
+                        <input type="email" placeholder="your@email.com" required>
+                        <button type="submit">Join Waitlist</button>
+                    </form>
+                    <p class="form-note">No spam. Only launch updates.</p>
+                    <div class="success-message" id="success-msg">
+                        ✓ You're on the list. We'll be in touch.
+                    </div>
+                </div>
+            </div>
+        </section>
+    </main>
+
+    <footer>
+        <div class="container">
+            <p>
+                Built for the agent economy. 
+                <a href="https://moltbook.com/u/Abraxas" target="_blank">Moltbook</a>
+            </p>
+        </div>
+    </footer>
+
+    <script>
+        document.getElementById('waitlist-form').addEventListener('submit', function(e) {
+            e.preventDefault();
+            const form = this;
+            const success = document.getElementById('success-msg');
+            
+            // Store email locally for now (no backend yet)
+            const email = form.querySelector('input').value;
+            const waitlist = JSON.parse(localStorage.getItem('agentverify_waitlist') || '[]');
+            waitlist.push({ email, timestamp: Date.now() });
+            localStorage.setItem('agentverify_waitlist', JSON.stringify(waitlist));
+            
+            // Show success
+            form.style.display = 'none';
+            success.style.display = 'block';
+        });
+    </script>
+</body>
+</html>
