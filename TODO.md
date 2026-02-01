@@ -3,28 +3,28 @@
 ## Before Wednesday Deployment
 
 ### Infrastructure
-- [ ] API server - install deps & test endpoints
-- [ ] Basescan verification script prep
+- [x] API server - install deps & test endpoints
+- [x] Basescan verification script prep
 - [ ] Environment config documentation
 
 ### Integration
-- [ ] Moltbook bridge - fetch agent data for verification
-- [ ] Clawdbot skill - complete and test
+- [x] Moltbook bridge - fetch agent data for verification
+- [x] Clawdbot skill - complete and test
 - [ ] DID resolver implementation
 
 ### Documentation
-- [ ] API documentation (OpenAPI/Swagger)
+- [x] API documentation (OpenAPI/Swagger)
 - [ ] Integration guide for other platforms
-- [ ] README improvements
+- [x] README improvements
 
 ### Testing
-- [ ] More comprehensive Foundry tests
+- [x] More comprehensive Foundry tests (27/31 passing)
 - [ ] API endpoint tests
 - [ ] E2E flow test script
 
 ### Launch Prep
-- [ ] Announcement draft (Moltbook + Twitter)
-- [ ] First agent registration script (Abraxas = #0001)
+- [x] Announcement draft (Moltbook + Twitter)
+- [x] First agent registration script (Abraxas = #0001)
 
 ---
 
@@ -33,3 +33,11 @@
 - [ ] Verify on Basescan
 - [ ] Register Abraxas
 - [ ] Announce launch
+
+---
+
+## Post-Launch
+- [ ] Twitter/X verification
+- [ ] Multi-sig credential issuance
+- [ ] Mainnet deployment
+- [ ] More platform integrations
